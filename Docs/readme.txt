@@ -1,1 +1,1 @@
-Add Here Any documentations related to Tuffy v1.0
+Add Here Any documentation related to Tuffy v1.0
