@@ -1,1 +1,1 @@
-Add here the final code of Splinter v1.0
+Add here the final code of Tuffy v1.0
