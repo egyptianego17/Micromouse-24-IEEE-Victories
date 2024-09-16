@@ -10,8 +10,8 @@ const int MOTOR_L_ENC_A = 4; // Left encoder pin A
 const int MOTOR_L_ENC_B = 5; // Left encoder pin B
 
 // Wheel circumference in cm
-const float wheelCircumference = 3.3; // cm
-const float distance_per_tick = wheelCircumference / 100.0; // cm per encoder tick
+const float wheelCircumference = 10.362; // cm
+const float distance_per_tick = wheelCircumference; // cm per encoder tick
 
 // Encoder counters
 volatile uint32_t encoderA_counter = 0; // Right encoder
