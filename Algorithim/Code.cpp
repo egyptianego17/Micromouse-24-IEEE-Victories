@@ -30,8 +30,8 @@ void log(const std::string &text)
 
 void updateCells(int x, int y, int orient, bool left, bool right, bool forward)
 {
-  log(std::to_string(x));
-  log(std::to_string(y));
+  // log(std::to_string(x));
+  // log(std::to_string(y));
   if (left && right && forward)
   {
     if (orient == FORWARD)
@@ -232,10 +232,10 @@ bool isIncrementConsistent(int current_x, int current_y, int (&floodArray)[8][8]
   if ((west_X >= 0) && (west_Y >= 0) && isAccessible(current_x, current_y, west_X, west_Y))
     minValues[LEFT] = floodArray[west_X][west_Y];
 
-  if (isAccessible(current_x, current_y, north_X, north_Y))
-    log("North Accessible");
-  else
-    log("North Unaccessible");
+  // if (isAccessible(current_x, current_y, north_X, north_Y))
+  //   log("North Accessible");
+  // else
+  //   log("North Unaccessible");
 
   for (int i = 0; i < 4; i++)
   {
@@ -287,11 +287,11 @@ void makeCellConsistent(int current_x, int current_y, int (&floodArray)[8][8])
     if (minValues[i] < minimalValue)
       minimalValue = minValues[i];
   }
-  log(std::to_string(minimalValue));
+  // log(std::to_string(minimalValue));
 
   if (minimalValue != 1000)
   {
-    log("I have updated floodArray");
+    // log("I have updated floodArray");
     floodArray[current_x][current_y] = minimalValue + 1;
   }
 }
@@ -338,7 +338,7 @@ void floodFillUsingQueue(int start_x, int start_y, int previous_x, int previous_
     // Check if the current cell is incrementally consistent with its neighbors
     if (!isIncrementConsistent(current_X, current_Y, floodArray))
     {
-      log("Not Consistent");
+      // log("Not Consistent");
       // If not consistent, make it consistent and increment its value
       makeCellConsistent(current_X, current_Y, floodArray);
 
@@ -359,10 +359,10 @@ void floodFillUsingQueue(int start_x, int start_y, int previous_x, int previous_
         }
       }
     }
-    else
-    {
-      log("Consistent");
-    }
+    // else
+    // {
+    //   log("Consistent");
+    // }
   }
 }
 
@@ -551,7 +551,7 @@ int run_maze(int (&floodArray)[8][8])
       API::turnLeft();
       orient = orientation(orient, 'L');
     }
-    log("moveForwad");
+    // log("moveForwad");
     API::moveForward();
     previous_x = current_x;
     previous_y = current_y;
@@ -579,25 +579,25 @@ int main(int argc, char *argv[])
       {6, 5, 4, 3, 3, 4, 5, 6}};
   run_maze(floodArray);
 
-  // print the flood array
-  log("{");
-  for (int i = 0; i < 8; ++i)
-  {
-    std::string line = "{";
-    for (int j = 0; j < 8; ++j)
-    {
-      line += std::to_string(floodArray[i][j]);
-      if (j < 7)
-      {
-        line += ", "; // Add comma between numbers, except for the last element
-      }
-    }
-    line += "}";
-    if (i < 7)
-    {
-      line += ","; // Add a comma between rows, except for the last row
-    }
-    log(line); // Log each row after constructing it
-  }
-  log("}");
+  // // print the flood array
+  // log("{");
+  // for (int i = 0; i < 8; ++i)
+  // {
+  //   std::string line = "{";
+  //   for (int j = 0; j < 8; ++j)
+  //   {
+  //     line += std::to_string(floodArray[i][j]);
+  //     if (j < 7)
+  //     {
+  //       line += ", "; // Add comma between numbers, except for the last element
+  //     }
+  //   }
+  //   line += "}";
+  //   if (i < 7)
+  //   {
+  //     line += ","; // Add a comma between rows, except for the last row
+  //   }
+  //   log(line); // Log each row after constructing it
+  // }
+  // log("}");
 }
