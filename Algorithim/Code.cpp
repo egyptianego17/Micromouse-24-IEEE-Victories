@@ -4,35 +4,17 @@
 #include "API.h"
 #include <stdio.h>
 
+#define FORWARD 0
+#define RIGHT 1
+#define BACKWARD 2
+#define LEFT 3
 
-
-
-
-
-#define FORWARD   0
-#define RIGHT     1
-#define BACKWARD  2
-#define LEFT      3
-
-
-int cellsArray[16][16] = {0};
-
-
-
-
-
-
-
-
-
-
+int cellsArray[8][8] = {0};
 
 void log(const std::string &text)
 {
   std::cerr << text << std::endl;
 }
-
-
 
 /**================================================================
  * @Fn             - updateWalls
@@ -45,7 +27,6 @@ void log(const std::string &text)
  * @param [in]     - F: Boolean indicating presence of front wall.
  * @retval         - None
  */
-
 
 void updateCells(int x, int y, int orient, bool left, bool right, bool forward)
 {
@@ -126,8 +107,6 @@ void updateCells(int x, int y, int orient, bool left, bool right, bool forward)
   }
 }
 
-
-
 /**================================================================
  * @Fn             - isAccessible
  * @brief          - Determines if the mouse can move from (current_x,current_y) to (target_x,target_y) (two adjacent cells)
@@ -137,8 +116,6 @@ void updateCells(int x, int y, int orient, bool left, bool right, bool forward)
  * @param [in]     - target_y: The y-coordinate of the target cell.
  * @retval         - bool: True if the mouse can move, False otherwise.
  */
-
-
 
 bool isAccessible(int current_x, int current_y, int target_x, int target_y)
 {
@@ -178,8 +155,6 @@ bool isAccessible(int current_x, int current_y, int target_x, int target_y)
   }
 }
 
-
-
 /**=============================================================================================
  * @Fn             - getSurroungings
  * @brief          - Computes the coordinates of neighboring cells in four cardinal directions
@@ -197,30 +172,39 @@ bool isAccessible(int current_x, int current_y, int target_x, int target_y)
  * Note            - Coordinates are set to -1 when they would be out of bounds (beyond 15x15 grid)
  **/
 
-
-
 void getSurroungings(int current_x, int current_y, int *north_x, int *north_y, int *east_x, int *east_y, int *south_x, int *south_y, int *west_x, int *west_y)
 {
-  if ((current_x + 1) >= 16)
+
+  // east
+  if ((current_x + 1) >= 8)
     *east_x = -1;
   else
     *east_x = current_x + 1;
 
-  *north_x = current_x;
   *east_y = current_y;
 
-  if ((current_y + 1) >= 16)
+  // west
+  if ((current_x - 1) < 0)
+    *west_x = -1;
+  else
+    *west_x = current_x - 1;
+
+  *west_y = current_y;
+
+  // north
+  *north_x = current_x;
+  if ((current_y + 1) >= 8)
     *north_y = -1;
   else
     *north_y = current_y + 1;
 
+  // south
   *south_x = current_x;
-  *south_y = current_y - 1;
-  *west_x = current_x - 1;
-  *west_y = current_y;
+  if ((current_y - 1) < 0)
+    *south_y = -1;
+  else
+    *south_y = current_y - 1;
 }
-
-
 
 /**===================================================================================================
  * @Fn             - isIncrementConsistent
@@ -230,11 +214,9 @@ void getSurroungings(int current_x, int current_y, int *north_x, int *north_y, i
  * @retval         - bool: True if the increment is consistent, False otherwise.
  */
 
-
-
-bool isIncrementConsistent(int current_x, int current_y ,int (&floodArray)[16][16])
+bool isIncrementConsistent(int current_x, int current_y, int (&floodArray)[8][8])
 {
-  int north_X=0, north_Y=0, east_X=0, east_Y=0, south_X=0, south_Y=0, west_X=0, west_Y=0;
+  int north_X = 0, north_Y = 0, east_X = 0, east_Y = 0, south_X = 0, south_Y = 0, west_X = 0, west_Y = 0;
   getSurroungings(current_x, current_y, &north_X, &north_Y, &east_X, &east_Y, &south_X, &south_Y, &west_X, &west_Y);
 
   int curentValue = floodArray[current_x][current_y];
@@ -250,13 +232,10 @@ bool isIncrementConsistent(int current_x, int current_y ,int (&floodArray)[16][1
   if ((west_X >= 0) && (west_Y >= 0) && isAccessible(current_x, current_y, west_X, west_Y))
     minValues[LEFT] = floodArray[west_X][west_Y];
 
-
-  if(isAccessible(current_x, current_y, north_X, north_Y))
+  if (isAccessible(current_x, current_y, north_X, north_Y))
     log("North Accessible");
   else
     log("North Unaccessible");
-
-
 
   for (int i = 0; i < 4; i++)
   {
@@ -264,14 +243,11 @@ bool isIncrementConsistent(int current_x, int current_y ,int (&floodArray)[16][1
       minCounts++;
   }
 
-
   if (minCounts > 0)
     return true;
   else
     return false;
 }
-
-
 
 /**========================================================================================================
 
@@ -287,9 +263,7 @@ bool isIncrementConsistent(int current_x, int current_y ,int (&floodArray)[16][1
 
  */
 
-
-
-void makeCellConsistent(int current_x, int current_y, int (&floodArray)[16][16])
+void makeCellConsistent(int current_x, int current_y, int (&floodArray)[8][8])
 {
   int north_X, north_Y, east_X, east_Y, south_X, south_Y, west_X, west_Y;
   getSurroungings(current_x, current_y, &north_X, &north_Y, &east_X, &east_Y, &south_X, &south_Y, &west_X, &west_Y);
@@ -315,14 +289,12 @@ void makeCellConsistent(int current_x, int current_y, int (&floodArray)[16][16])
   }
   log(std::to_string(minimalValue));
 
-
-  if (minimalValue != 1000){
+  if (minimalValue != 1000)
+  {
     log("I have updated floodArray");
     floodArray[current_x][current_y] = minimalValue + 1;
   }
 }
-
-
 
 /**=====================================================================================
  * @Fn          - floodFillUsingStack
@@ -340,66 +312,59 @@ void makeCellConsistent(int current_x, int current_y, int (&floodArray)[16][16])
  * @return None.
  */
 
-
-void floodFillUsingQueue(int start_x, int start_y, int previous_x, int previous_y,int (&floodArray)[16][16])
+void floodFillUsingQueue(int start_x, int start_y, int previous_x, int previous_y, int (&floodArray)[8][8])
 {
-    int north_X, north_Y, east_X, east_Y, south_X, south_Y, west_X, west_Y;
+  int north_X, north_Y, east_X, east_Y, south_X, south_Y, west_X, west_Y;
 
-    std::queue<int> cellQueue;
+  std::queue<int> cellQueue;
 
-    if(!isIncrementConsistent(start_x, start_y, floodArray))
-      floodArray[start_x][start_y] = floodArray[start_x][start_y] + 1;
+  if (!isIncrementConsistent(start_x, start_y, floodArray))
+    floodArray[start_x][start_y] = floodArray[start_x][start_y] + 1;
 
+  cellQueue.push(start_x);
+  cellQueue.push(start_y);
 
-    cellQueue.push(start_x);
-    cellQueue.push(start_y);
+  while (!cellQueue.empty())
+  {
+    int current_X = cellQueue.front();
+    cellQueue.pop();
+    int current_Y = cellQueue.front();
+    cellQueue.pop();
 
-    while (!cellQueue.empty())
+    // Check if the current cell is already visited
+
+    // Mark the current cell as visited
+
+    // Check if the current cell is incrementally consistent with its neighbors
+    if (!isIncrementConsistent(current_X, current_Y, floodArray))
     {
-        int current_X = cellQueue.front();
-        cellQueue.pop();
-        int current_Y = cellQueue.front();
-        cellQueue.pop();
+      log("Not Consistent");
+      // If not consistent, make it consistent and increment its value
+      makeCellConsistent(current_X, current_Y, floodArray);
 
-        // Check if the current cell is already visited
+      getSurroungings(current_X, current_Y, &north_X, &north_Y, &east_X, &east_Y, &south_X, &south_Y, &west_X, &west_Y);
 
+      int neighborsX[] = {north_X, east_X, south_X, west_X};
+      int neighborsY[] = {north_Y, east_Y, south_Y, west_Y};
 
-        // Mark the current cell as visited
+      for (int i = 0; i < 4; i++)
+      {
+        int neighborX = neighborsX[i];
+        int neighborY = neighborsY[i];
 
-        // Check if the current cell is incrementally consistent with its neighbors
-        if (!isIncrementConsistent(current_X, current_Y,floodArray))
+        if (neighborX >= 0 && neighborY >= 0 && isAccessible(current_X, current_Y, neighborX, neighborY))
         {
-            log("Not Consistent");
-            // If not consistent, make it consistent and increment its value
-            makeCellConsistent(current_X, current_Y, floodArray);
-
-            getSurroungings(current_X, current_Y, &north_X, &north_Y, &east_X, &east_Y, &south_X, &south_Y, &west_X, &west_Y);
-
-
-
-            int neighborsX[] = {north_X, east_X, south_X, west_X};
-            int neighborsY[] = {north_Y, east_Y, south_Y, west_Y};
-
-            for (int i = 0; i < 4; i++)
-            {
-                int neighborX = neighborsX[i];
-                int neighborY = neighborsY[i];
-
-                if (neighborX >= 0 && neighborY >= 0 && isAccessible(current_X, current_Y, neighborX, neighborY))
-                {
-                    cellQueue.push(neighborX);
-                    cellQueue.push(neighborY);
-                }
-            }
-        }else{
-          log("Consistent");
+          cellQueue.push(neighborX);
+          cellQueue.push(neighborY);
         }
+      }
     }
+    else
+    {
+      log("Consistent");
+    }
+  }
 }
-
-
-
-
 
 /**=====================================================================
  * @fn          - whereToMove
@@ -414,82 +379,76 @@ void floodFillUsingQueue(int start_x, int start_y, int previous_x, int previous_
  *=======================================================================
  */
 
-
-char whereToMove(int current_x, int current_y, int previous_x, int previous_y, int orient,int (&floodArray)[16][16])
+char whereToMove(int current_x, int current_y, int previous_x, int previous_y, int orient, int (&floodArray)[8][8])
 {
-    // Define coordinates for each direction
-    int north_X, north_Y, east_X, east_Y, south_X, south_Y, west_X, west_Y;
-    getSurroungings(current_x, current_y, &north_X, &north_Y, &east_X, &east_Y, &south_X, &south_Y, &west_X, &west_Y);
+  // Define coordinates for each direction
+  int north_X, north_Y, east_X, east_Y, south_X, south_Y, west_X, west_Y;
+  getSurroungings(current_x, current_y, &north_X, &north_Y, &east_X, &east_Y, &south_X, &south_Y, &west_X, &west_Y);
 
-    int minValue = 1000; // Initialize with a high value
-    int minCell = -1;    // Initialize to an invalid value
-    int previous = -1;
-    int AccessiblePathsNum = 0;
+  int minValue = 1000; // Initialize with a high value
+  int minCell = -1;    // Initialize to an invalid value
+  int previous = -1;
+  int AccessiblePathsNum = 0;
 
-    // Initialize accessible neighbors with high values
-    int accessibleNeighbors[4] = {1000, 1000, 1000, 1000};
+  // Initialize accessible neighbors with high values
+  int accessibleNeighbors[4] = {1000, 1000, 1000, 1000};
 
-    // Determine the previous direction
-    if (south_X == previous_x && south_Y == previous_y)
-        previous = BACKWARD;
-    else if (north_X == previous_x && north_Y == previous_y)
-        previous = FORWARD;
-    else if (east_X == previous_x && east_Y == previous_y)
-        previous = RIGHT;
-    else if (west_X == previous_x && west_Y == previous_y)
-        previous = LEFT;
+  // Determine the previous direction
+  if (south_X == previous_x && south_Y == previous_y)
+    previous = BACKWARD;
+  else if (north_X == previous_x && north_Y == previous_y)
+    previous = FORWARD;
+  else if (east_X == previous_x && east_Y == previous_y)
+    previous = RIGHT;
+  else if (west_X == previous_x && west_Y == previous_y)
+    previous = LEFT;
 
-    // Array of pointers to neighbor coordinates
-    int* neighborCoords[4][2] = {
-        {&north_X, &north_Y},
-        {&east_X, &east_Y},
-        {&south_X, &south_Y},
-        {&west_X, &west_Y}
-    };
+  // Array of pointers to neighbor coordinates
+  int *neighborCoords[4][2] = {
+      {&north_X, &north_Y},
+      {&east_X, &east_Y},
+      {&south_X, &south_Y},
+      {&west_X, &west_Y}};
 
-    // Check each direction (north, east, south, west)
-    for (int i = 0; i < 4; i++)
+  // Check each direction (north, east, south, west)
+  for (int i = 0; i < 4; i++)
+  {
+    int neighborX = *neighborCoords[i][0];
+    int neighborY = *neighborCoords[i][1];
+
+    // Check if the neighbor is accessible
+    if (neighborX >= 0 && neighborY >= 0 && isAccessible(current_x, current_y, neighborX, neighborY))
     {
-        int neighborX = *neighborCoords[i][0];
-        int neighborY = *neighborCoords[i][1];
-
-        // Check if the neighbor is accessible
-        if (neighborX >= 0 && neighborY >= 0 && isAccessible(current_x, current_y, neighborX, neighborY))
-        {
-            AccessiblePathsNum++;
-            accessibleNeighbors[i] = floodArray[neighborX][neighborY];
-        }
+      AccessiblePathsNum++;
+      accessibleNeighbors[i] = floodArray[neighborX][neighborY];
     }
+  }
 
-    log("Accessible Paths: " + std::to_string(AccessiblePathsNum));
+  // log("Accessible Paths: " + std::to_string(AccessiblePathsNum));
 
-    // Find the minimum value among accessible neighbors
-    for (int i = 0; i < 4; i++)
+  // Find the minimum value among accessible neighbors
+  for (int i = 0; i < 4; i++)
+  {
+    if (accessibleNeighbors[i] < minValue)
     {
-        if (accessibleNeighbors[i] < minValue)
-        {
-            if (AccessiblePathsNum == 1 || i != previous)
-            {
-                minValue = accessibleNeighbors[i];
-                minCell = i;
-            }
-        }
+      if (AccessiblePathsNum == 1 || i != previous)
+      {
+        minValue = accessibleNeighbors[i];
+        minCell = i;
+      }
     }
+  }
 
-    // Determine the direction to move
-    if (minCell == orient)
-        return 'F';
-    else if ((minCell == (orient - 1 + 4) % 4))
-        return 'L';
-    else if ((minCell == (orient + 1) % 4))
-        return 'R';
-    else
-        return 'B';
+  // Determine the direction to move
+  if (minCell == orient)
+    return 'F';
+  else if ((minCell == (orient - 1 + 4) % 4))
+    return 'L';
+  else if ((minCell == (orient + 1) % 4))
+    return 'R';
+  else
+    return 'B';
 }
-
-
-
-
 
 /**=====================================================================
  * @fn          - displayFlood
@@ -500,155 +459,145 @@ char whereToMove(int current_x, int current_y, int previous_x, int previous_y, i
  *=======================================================================
  */
 
-
-
-void displayFlood(int (&floodArray)[16][16])
+void displayFlood(int (&floodArray)[8][8])
 
 {
 
-  for(int i=0;i<16;i++)
+  for (int i = 0; i < 16; i++)
 
   {
 
-    for(int j=0;j<16;j++)
+    for (int j = 0; j < 16; j++)
 
     {
 
-      API::setText(i,j,std::to_string(floodArray[i][j]));
-
+      API::setText(i, j, std::to_string(floodArray[i][j]));
     }
-
   }
-
 }
-
-
 
 void displayCellsArray(void)
 
 {
 
-  for(int i=0;i<16;i++)
+  for (int i = 0; i < 16; i++)
 
   {
 
-    for(int j=0;j<16;j++)
+    for (int j = 0; j < 16; j++)
 
     {
 
-      API::setText(i,j,std::to_string(cellsArray[i][j]));
-
+      API::setText(i, j, std::to_string(cellsArray[i][j]));
     }
-
   }
-
 }
-
-
 
 int current_x = 0, current_y = 0, previous_x = 0, previous_y = 0, orient = FORWARD;
 char Direction = 0;
-bool left=false, right=false, forward=false;
+bool left = false, right = false, forward = false;
 
-int run_maze(int (&floodArray)[16][16],int x)
+int run_maze(int (&floodArray)[8][8])
 {
   int Orient = 0;
-  API::setColor(0, 0, 'G');
-  API::setText(0, 0, "abc");
+
   current_x = 0, current_y = 0, previous_x = 0, previous_y = 0, orient = FORWARD;
   while (true)
   {
     left = API::wallLeft();
 
-    if(left)
-      log("Wall Left");
+    // if(left)
+    //   log("Wall Left");
 
     right = API::wallRight();
 
-    if(right)
-      log("Wall Right");
+    // if(right)
+    //   log("Wall Right");
 
     forward = API::wallFront();
 
-    if(forward)
-      log("Wall Front");
+    // if(forward)
+    //   log("Wall Front");
 
     updateCells(current_x, current_y, orient, left, right, forward);
 
-
-
     if (floodArray[current_x][current_y] != 0)
     {
-      floodFillUsingQueue(current_x, current_y,previous_x,previous_y ,floodArray);
+      floodFillUsingQueue(current_x, current_y, previous_x, previous_y, floodArray);
     }
     else
     {
       break;
     }
-      Direction = whereToMove(current_x, current_y, previous_x, previous_y, orient , floodArray);
+    Direction = whereToMove(current_x, current_y, previous_x, previous_y, orient, floodArray);
 
-      std::string s(1, Direction);
-      log(s);
-      
+    std::string s(1, Direction);
+    // log(s);
 
-      if (Direction == 'L')
-      {
-        API::turnLeft();
-        orient = orientation(orient, 'L');
-      }
-      else if (Direction == 'R')
-      {
-        API::turnRight();
-        orient = orientation(orient, 'R');
-      }
-      else if (Direction == 'B')
-      {
-        API::turnLeft();
-        orient = orientation(orient, 'L');
-        API::turnLeft();
-        orient = orientation(orient, 'L');
-      }
-      log("moveForwad");
-      API::moveForward();
-      previous_x = current_x;
-      previous_y = current_y;
+    if (Direction == 'L')
+    {
+      API::turnLeft();
+      orient = orientation(orient, 'L');
+    }
+    else if (Direction == 'R')
+    {
+      API::turnRight();
+      orient = orientation(orient, 'R');
+    }
+    else if (Direction == 'B')
+    {
+      API::turnLeft();
+      orient = orientation(orient, 'L');
+      API::turnLeft();
+      orient = orientation(orient, 'L');
+    }
+    log("moveForwad");
+    API::moveForward();
+    previous_x = current_x;
+    previous_y = current_y;
 
-      displayFlood(floodArray);
-      // displayCellsArray();
+    displayFlood(floodArray);
+    // displayCellsArray();
 
-
-      // log(std::to_string(current_x));
-      // log(std::to_string(current_y));
-      updateCoordinates(orient, &current_x, &current_y);
+    // log(std::to_string(current_x));
+    // log(std::to_string(current_y));
+    updateCoordinates(orient, &current_x, &current_y);
   }
   return 0;
 }
 
-int main(int argc, char *argv[]){
-int floodArray[16][16] = {
-    {14, 13, 12, 11, 10, 9, 8, 7, 7, 8, 9, 10, 11, 12, 13, 14},
-    {13, 12, 11, 10, 9, 8, 7, 6, 6, 7, 8, 9, 10, 11, 12, 13},
-    {12, 11, 10, 9, 8, 7, 6, 5, 5, 6, 7, 8, 9, 10, 11, 12},
-    {11, 10, 9, 8, 7, 6, 5, 4, 4, 5, 6, 7, 8, 9, 10, 11},
-    {10, 9, 8, 7, 6, 5, 4, 3, 3, 4, 5, 6, 7, 8, 9, 10},
-    {9, 8, 7, 6, 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9},
-    {8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7, 8},
-    {7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7},
-    {7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7},
-    {8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7, 8},
-    {9, 8, 7, 6, 5, 4, 3, 2, 2, 3, 4, 5, 6, 7, 8, 9},
-    {10, 9, 8, 7, 6, 5, 4, 3, 3, 4, 5, 6, 7, 8, 9, 10},
-    {11, 10, 9, 8, 7, 6, 5, 4, 4, 5, 6, 7, 8, 9, 10, 11},
-    {12, 11, 10, 9, 8, 7, 6, 5, 5, 6, 7, 8, 9, 10, 11, 12},
-    {13, 12, 11, 10, 9, 8, 7, 6, 6, 7, 8, 9, 10, 11, 12, 13},
-    {14, 13, 12, 11, 10, 9, 8, 7, 7, 8, 9, 10, 11, 12, 13, 14}
-};
-  run_maze(floodArray,0);
-  for (int i = 0; i < 16; ++i) {
-        std::string line;
-        for (int j = 0; j < 16; ++j) {
-            line += std::to_string(floodArray[i][j]) + " ";
-        }
-        log(line);
+int main(int argc, char *argv[])
+{
+  int floodArray[8][8] = {
+      {6, 5, 4, 3, 3, 4, 5, 6},
+      {5, 4, 3, 2, 2, 3, 4, 5},
+      {4, 3, 2, 1, 1, 2, 3, 4},
+      {3, 2, 1, 0, 0, 1, 2, 3},
+      {3, 2, 1, 0, 0, 1, 2, 3},
+      {4, 3, 2, 1, 1, 2, 3, 4},
+      {5, 4, 3, 2, 2, 3, 4, 5},
+      {6, 5, 4, 3, 3, 4, 5, 6}};
+  run_maze(floodArray);
+
+  // print the flood array
+  log("{");
+  for (int i = 0; i < 8; ++i)
+  {
+    std::string line = "{";
+    for (int j = 0; j < 8; ++j)
+    {
+      line += std::to_string(floodArray[i][j]);
+      if (j < 7)
+      {
+        line += ", "; // Add comma between numbers, except for the last element
+      }
     }
+    line += "}";
+    if (i < 7)
+    {
+      line += ","; // Add a comma between rows, except for the last row
+    }
+    log(line); // Log each row after constructing it
   }
+  log("}");
+}
