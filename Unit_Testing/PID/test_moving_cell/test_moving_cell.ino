@@ -156,7 +156,7 @@
 // Wheel and encoder constants
 const float wheelCircumference = 10.362; // cm
 const float distance_per_tick = wheelCircumference / 200; // cm per encoder tick (assuming 200 ticks per revolution)
-const float target_distance = 20.0; // Target distance to move forward (20 cm)
+// const float target_distance = 20.0; // Target distance to move forward (20 cm)
 
 // PID constants
 float Kp = 2.0;  // Proportional gain
@@ -177,58 +177,34 @@ volatile long int encoderA_counter = 0;  // Right encoder
 volatile long int encoderB_counter = 0;  // Left encoder
 
 // Motor speed limits
-const int MIN_SPEED = 130;  // Minimum motor speed (PWM)
-const int MAX_SPEED = 200;  // Maximum motor speed (PWM)
+const int MIN_SPEED = 80;  // Minimum motor speed (PWM)
+const int MAX_SPEED = 150;  // Maximum motor speed (PWM)
 
 void setup() {
   Serial.begin(115200);
+  delay(2000);
   motorInit();
 }
 
 void loop() {
   // Call the PID function to handle movement
-  PID();
+  PID(20);
 }
 
 // Function to encapsulate PID control and movement logic
-void PID() {
+void PID(int target_distance) {
   // Calculate the current distance traveled
   float current_distance = calculate_distance((encoderA_counter + encoderB_counter) / 2);
 
   // Check if the car has reached the target distance (20 cm)
   if (current_distance < target_distance) {
-    // PID calculations
-    error = target_distance - current_distance;  // Calculate the error
-    integral += error;  // Calculate the integral 
-    derivative = error - previous_error;  // Calculate the derivative term
-
-    // PID control output
-    control_output = (Kp * error) + (Ki * integral) + (Kd * derivative);
-
-    // Adjust motor speed based on control output
-    int motor_speed;
-    
-    // If the error is small, reduce speed more significantly
-    if (error < 5.0) {  // Example threshold for close to target (5 cm)
-      motor_speed = map((int)control_output, 0, 255, 0, MIN_SPEED); // Slow down to less than MIN_SPEED
-      motor_speed = constrain(motor_speed, 0, MIN_SPEED);
-    } else {
-      motor_speed = map((int)control_output, 0, 255, MIN_SPEED, MAX_SPEED); // Normal operation between MIN_SPEED and MAX_SPEED
-      motor_speed = constrain(motor_speed, MIN_SPEED, MAX_SPEED);
-    }
-
     // Apply the motor speed to move forward
-    moveForward(motor_speed);
-
-    // Update the previous error
-    previous_error = error;
+    moveForward(100);
 
     // Print current distance and motor speed for debugging
     Serial.print("Distance: ");
     Serial.print(current_distance);
     Serial.print(" cm | Motor Speed: ");
-    Serial.println(motor_speed);
-    Serial.println(i);
 
     delay(100);  // Small delay for loop stability
   } else {
@@ -260,7 +236,7 @@ void motorInit(void) {
 void moveForward(int speed) {
   analogWrite(MOTOR_R_1, speed);
   digitalWrite(MOTOR_R_2, LOW);
-  analogWrite(MOTOR_L_1, speed);
+  analogWrite(MOTOR_L_1, speed-10);
   digitalWrite(MOTOR_L_2, LOW);
 }
 

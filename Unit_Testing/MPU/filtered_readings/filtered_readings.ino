@@ -4,7 +4,7 @@
 MPU6050 mpu(Wire);
 
 float filteredAngleZ = 0.0; // Initial filtered angle
-float alpha = 0.95;         // Complementary filter coefficient
+float alpha = 0.80;         // Complementary filter coefficient
 unsigned long previousTime = 0;  // To store the previous time for interval calculation
 
 void setup() {
