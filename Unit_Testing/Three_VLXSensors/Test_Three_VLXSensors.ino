@@ -6,9 +6,9 @@
 #define LOX3_ADDRESS 0x32
 
 // set the pins to shutdown
-#define SHT_LOX1 PC15  //Right
+#define SHT_LOX1 PB2  //Right
 #define SHT_LOX2 PC14  //Middle
-#define SHT_LOX3 8     //Left
+#define SHT_LOX3 PC15     //Left
 
 #define COUNT_SENSORS 3
 
@@ -47,23 +47,26 @@ void setID() {
   digitalWrite(SHT_LOX1, HIGH);
   digitalWrite(SHT_LOX2, LOW);
   digitalWrite(SHT_LOX3, LOW);
-  // initing LOX1
+  delay(10);
+  //initing LOX1
   if (!lox1.begin()) {
     Serial.println(F("Failed to boot Right VL6180X"));
-    while (1)
-      ;
+    // while (1)
+    //   ;
   }
   lox1.setAddress(LOX1_ADDRESS);
   delay(10);
 
   // activating LOX2
   digitalWrite(SHT_LOX2, HIGH);
+  // digitalWrite(SHT_LOX1, LOW);
+  // digitalWrite(SHT_LOX3, LOW);
   delay(10);
   //initing LOX2
   if (!lox2.begin()) {
     Serial.println(F("Failed to boot Middle VL6180X"));
-    while (1)
-      ;
+    // while (1)
+    //   ;
   }
   lox2.setAddress(LOX2_ADDRESS);
   delay(10);
@@ -74,8 +77,8 @@ void setID() {
   //initing LOX3
   if (!lox3.begin()) {
     Serial.println(F("Failed to boot Left VL6180X"));
-    while (1)
-      ;
+    // while (1)
+    //   ;
   }
   lox3.setAddress(LOX3_ADDRESS);
   delay(10);
@@ -115,10 +118,10 @@ void readSensor(Adafruit_VL6180X &vl) {
 void read_sensors() {
   readSensor(lox1);
   sensor_ranges[RIGHT_VLX] = tempRange;  //save it now
-  readSensor(lox2);
-  sensor_ranges[Middle_VLX] = tempRange;  //save it now
-  readSensor(lox3);
-  sensor_ranges[LEFT_VLX] = tempRange;  //save it now
+  // readSensor(lox2);
+  // sensor_ranges[Middle_VLX] = tempRange;  //save it now
+  // readSensor(lox3);
+  // sensor_ranges[LEFT_VLX] = tempRange;  //save it now
 }
 //===============================================================
 // Setup
