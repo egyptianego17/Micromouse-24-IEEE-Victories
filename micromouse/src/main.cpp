@@ -62,7 +62,7 @@ void updateAngleTask(void* pvParameters);
 void rightEncoderCb();
 void leftEncoderCb();
 void left(void);
-
+void right(void);
 void setup() {
   Serial.begin(115200);
 
@@ -98,6 +98,8 @@ void loop() {
   left();
   Serial.println(abs(currentYaw - desiredAngle));
   delay(2000);
+  right();
+  delay(2000);
 }
 
 void updateAngleTask(void *pvParameters) {
@@ -129,6 +131,11 @@ void left(void) {
   turnLeft();
 }
 
+void right(void) {
+  desiredAngle -= ROTATE_ANGLE;
+  turnRight();
+}
+
 void moveForwardM() {
   digitalWrite(MOTOR_R_1, 1);
   digitalWrite(MOTOR_R_2, 0);
@@ -142,25 +149,21 @@ void turnRight() {
     return;
   }
 
-  yaw = 0;
   previousTime = micros();
-
-  while (abs(yaw)-90.0 < 1) {
-    IMU::read();
-    long currentTime = micros();
-    double dt = (currentTime - previousTime) / 1000000.0;
-    previousTime = currentTime;
-
-    double gyroZ = IMU::getRawGyroZ() / 131.0;
-    yaw += (gyroZ - rateOfIncrease) * dt;
-
-    turnRightM();
-    Serial.print("Turning Right. Current Yaw: ");
-    Serial.println(yaw);
+  while (abs(currentYaw - desiredAngle) > 0.3) {
+    Serial.println("abs(currentYaw - desiredAngle)");
+    Serial.println(abs(currentYaw - desiredAngle)); 
+    Serial.println("yaw < desiredAngle - 0.3");
+    Serial.println(currentYaw < desiredAngle);
+    if (currentYaw < desiredAngle - 0.3) {
+      Serial.print("Left");
+      turnRightM();
+    }
+    else if (currentYaw > desiredAngle + 0.3) {
+      Serial.print("Right");
+      turnLeftM();
+    }
   }
-
-  stopMotors();
-  Serial.println("Completed 90-degree right turn.");
 }
 
 void turnLeft() {
