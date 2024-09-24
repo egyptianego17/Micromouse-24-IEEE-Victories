@@ -11,7 +11,7 @@ const int MOTOR_L_ENC_B = 5; // Left encoder pin B
 
 // Wheel circumference and encoder parameters
 const float wheelCircumference = 10.362; // cm
-const int encoderTicksPerRevolution = 360; // Number of encoder ticks per wheel revolution
+const int encoderTicksPerRevolution = 200; // Number of encoder ticks per wheel revolution
 const float distance_per_tick = wheelCircumference / encoderTicksPerRevolution; // cm per encoder tick
 
 // Target distance to move forward (one cell = 18 cm)
