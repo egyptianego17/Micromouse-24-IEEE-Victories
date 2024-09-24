@@ -1,3 +1,6 @@
+#ifndef OLED_INTERFACE_H
+#define OLED_INTERFACE_H
+
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -9,7 +12,8 @@
 #define OLED_RESET -1        // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3C  ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+// Declare the object as extern
+extern Adafruit_SSD1306 display;
 
 #define LOGO_HEIGHT 47
 #define LOGO_WIDTH 128
@@ -65,5 +69,9 @@ const unsigned char myBitmap[] PROGMEM = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-void drawTuffy();
-void displayData(int x , int y ,uint8_t textSize ,String Label,uint16_t Data);
+// APIs
+void OLED_setup();
+void OLED_drawTuffy();
+void OLED_displayData(int x, int y, uint8_t textSize, String Label, uint16_t Data);
+
+#endif  // OLED_H

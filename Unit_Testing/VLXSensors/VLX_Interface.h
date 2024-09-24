@@ -2,6 +2,7 @@
 #define VLX_INTERFACE_H
 
 #include <Adafruit_VL6180X.h>
+#include "OLED_Interface.h"
 
 // address we will assign if dual sensor is present
 #define LOX1_ADDRESS 0x30
@@ -15,15 +16,15 @@
 
 #define COUNT_SENSORS 3
 
-#define RIGHT_VLX 0
-#define Middle_VLX 1
-#define LEFT_VLX 2
+#define RIGHT_VLX    0
+#define MIDDLE_VLX   1
+#define LEFT_VLX     2
 
-String sensorsNames[3] = { "Right_Sensor", "Middle_Sensor", "Left_Sensor" };
+// Declare the sensors array as extern
+extern Adafruit_VL6180X sensors[COUNT_SENSORS];
 
-Adafruit_VL6180X sensors[COUNT_SENSORS];
-
-void sensorsInit();
-uint8_t readDistance(Adafruit_VL6180X &vl);
+//APIs
+void    VLX_setupSensors();
+uint8_t VLX_readDistance(uint8_t sensorID);
 
 #endif
