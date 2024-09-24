@@ -72,6 +72,6 @@ const unsigned char myBitmap[] PROGMEM = {
 // APIs
 void OLED_setup();
 void OLED_drawTuffy();
-void OLED_displayData(int x, int y, uint8_t textSize, String Label, uint16_t Data);
+void OLED_displayData(int x, int y, uint8_t textSize, String Label, int16_t Data);
 
 #endif  // OLED_H

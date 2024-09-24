@@ -1,13 +1,13 @@
+#include <sys/_stdint.h>
 #include"OLED_Interface.h"
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 void OLED_setup(){
-  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("SSD1306 allocation failed"));
-  }
+  display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
   display.setRotation(90);
   delay(10);
+  display.clearDisplay();
 }
 void OLED_drawTuffy(void) {
   display.clearDisplay();
@@ -18,7 +18,7 @@ void OLED_drawTuffy(void) {
   display.print("Tuffy V1.0");
   display.display();
 }
-void OLED_displayData(int x , int y ,uint8_t textSize ,String Label,uint16_t Data){
+void OLED_displayData(int x , int y ,uint8_t textSize ,String Label,int16_t Data){
   display.setTextSize(textSize);
   display.setCursor(x, y);
   display.setTextColor(SSD1306_WHITE);
@@ -28,7 +28,7 @@ void OLED_displayData(int x , int y ,uint8_t textSize ,String Label,uint16_t Dat
     display.setTextColor(WHITE, BLACK);
     display.print(Data);
     display.print("cm");
-    display.print("  ");
+    display.print("");
     }
   display.display();
 }

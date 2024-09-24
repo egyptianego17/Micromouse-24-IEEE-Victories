@@ -1,3 +1,6 @@
+#include <sys/_stdint.h>
+#include "WSerial.h"
+#include "wiring_time.h"
 #include "VLX_Interface.h"
 
 Adafruit_VL6180X sensors[COUNT_SENSORS];
@@ -33,7 +36,7 @@ void VLX_setupSensors() {
   delay(10);
   //initing LOX1
   if (!sensors[RIGHT_VLX].begin()) {
-    display.print("Right Sensor Failed!");
+    OLED_displayData(0,0,2,"RS Failed!",-1);
   }
   sensors[RIGHT_VLX].setAddress(LOX1_ADDRESS);
   delay(10);
@@ -43,7 +46,7 @@ void VLX_setupSensors() {
   delay(10);
   //initing LOX2
   if (!sensors[MIDDLE_VLX].begin()) {
-    display.print("Middle Sensor Failed!");
+    OLED_displayData(0,22,2,"MS Failed!",-1);
   }
   sensors[MIDDLE_VLX].setAddress(LOX2_ADDRESS);
   delay(10);
@@ -53,12 +56,16 @@ void VLX_setupSensors() {
   delay(10);
   //initing LOX3
   if (!sensors[LEFT_VLX].begin()) {
-    display.print("Left Sensor Failed!");
+    OLED_displayData(0,44,2,"LS Failed!",-1);
   }
   sensors[LEFT_VLX].setAddress(LOX3_ADDRESS);
   delay(10);
+  delay(1000);
 }
 
 uint8_t VLX_readDistance(uint8_t sensorID) {
-    return (sensors[sensorID].readRange()/10);
+  if(sensors[sensorID].begin())
+      return (sensors[sensorID].readRange()/10);
+  else
+      return MAX_DISTANCE;
 }

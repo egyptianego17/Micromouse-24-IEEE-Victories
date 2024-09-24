@@ -20,6 +20,8 @@
 #define MIDDLE_VLX   1
 #define LEFT_VLX     2
 
+#define MAX_DISTANCE  25   //cm
+
 // Declare the sensors array as extern
 extern Adafruit_VL6180X sensors[COUNT_SENSORS];
 
