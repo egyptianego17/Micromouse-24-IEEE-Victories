@@ -1,5 +1,22 @@
+#ifndef OLED_INTERFACE_H
+#define OLED_INTERFACE_H
 
-#include"OLED_I2C.h"
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128  // OLED display width, in pixels
+#define SCREEN_HEIGHT 64  // OLED display height, in pixels
+
+#define OLED_RESET -1        // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3C  ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+
+// Declare the object as extern
+extern Adafruit_SSD1306 display;
+
+#define LOGO_HEIGHT 47
+#define LOGO_WIDTH 128
 
 const unsigned char myBitmap[] PROGMEM = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
@@ -52,22 +69,9 @@ const unsigned char myBitmap[] PROGMEM = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-void drawTuffy(void) {
-  display.clearDisplay();
-  display.drawBitmap(0, 0, myBitmap, LOGO_WIDTH, LOGO_HEIGHT, 1);
-  display.setTextSize(2);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 48);
-  display.print("Tuffy V1.0");
-  display.display();
-}
-void displayData(int x , int y ,uint8_t textSize ,String Label, uint16_t Data){
-  display.setTextSize(textSize);
-  display.setCursor(x, y);
-  display.setTextColor(SSD1306_WHITE);
-  if(Label.length() > 0)
-    display.print(Label);
-  if (Data > 0)
-    display.print(Data);
-  display.display();
-}
+// APIs
+void OLED_setup();
+void OLED_drawTuffy();
+void OLED_displayData(int x, int y, uint8_t textSize, String Label, int16_t Data);
+
+#endif  // OLED_H
