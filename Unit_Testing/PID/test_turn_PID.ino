@@ -1,6 +1,9 @@
 #include <Wire.h>
 #include <MPU6050_light.h>
 
+// Direction: left >> 0 , right >> 1
+int direction = 0;
+
 // Motor pins
 const int MOTOR_R_1 = 9;
 const int MOTOR_R_2 = 10;
@@ -44,15 +47,24 @@ void motorInit(void) {
 
 // Move motors to turn right
 void adjustMotorsForTurn(float PID_turn) {
-    int turn_speed = 110;  // Speed for turning            ///////////////////////
-    int left_motor_speed = turn_speed - PID_turn;
-    int right_motor_speed = turn_speed + PID_turn;
+
+    int left_motor_speed = PID_turn; // 0
+    int right_motor_speed = -PID_turn; // 0
     
-    // Set motor speeds (assuming motor control pins)
-    analogWrite(MOTOR_R_1, constrain(left_motor_speed, 0, 255));  // Left motor
-    analogWrite(MOTOR_R_2, 0);  // Stop the right backward direction
-    analogWrite(MOTOR_L_1, 0);  // Stop the left forward direction
-    analogWrite(MOTOR_L_2, constrain(right_motor_speed, 0, 255)); // Right motor
+    if(direction == 1){ // right turn
+    // Set motor speeds
+    analogWrite(MOTOR_R_1, map(left_motor_speed, -90, 90,120,180)); // >> 150
+    analogWrite(MOTOR_R_2, 0);
+    analogWrite(MOTOR_L_1, 0);
+    analogWrite(MOTOR_L_2, map(right_motor_speed, -90, 90,120,180)); //150
+    }
+    else if(direction == 0){ // left turn
+    // Set motor speeds
+    analogWrite(MOTOR_R_1, 0);
+    analogWrite(MOTOR_R_2, map(left_motor_speed, -90, 90,120,180));
+    analogWrite(MOTOR_L_1, map(right_motor_speed, -90, 90,120,180));
+    analogWrite(MOTOR_L_2, 0);
+    }
 }
 
 void stop() {
@@ -69,7 +81,7 @@ void computePID() {
     float current_angle = mpu.getAngleZ();
     
     // Calculate error for PID control
-    float angle_error = target_angle - current_angle;
+    float angle_error = target_angle - abs(current_angle);
 
     // PID control for turning
     integral_turn += angle_error;
@@ -78,7 +90,16 @@ void computePID() {
                      Kd_turn * (angle_error - previous_error_turn);
     previous_error_turn = angle_error;
 
+    // if (direction == 0){
+    //     PID_turn = -PID_turn; // turning left
+        
+    // }
+    // else if(direction == 1){
+    //     PID_turn = PID_turn; // turning right
+    // }
+    
     // Adjust motor speeds based on PID correction for turning
+    if(PID_turn == 0){ while(true); } // to be discussed with api
     adjustMotorsForTurn(PID_turn);
 
     // Print current angle and PID correction
